@@ -20,26 +20,27 @@ public class ArvoreBinaria {
         Raiz = inserir(Raiz, novoValor);
     }
 
-    private void exibirEsquerdo(BIntNo arv) {
+
+    public void exibirNoEsq(BIntNo arv) {
         if (arv != null) {
-            exibirEsquerdo(arv.esq);
-            System.out.println(arv.valor);
+            System.out.println("Esquerdo: " + arv.valor);
+            exibirNoEsq(arv.esq);
+            exibirNoEsq(arv.dir);
         }
     }
 
-    public void exibirNoEsq() {
-        exibirEsquerdo(Raiz);
-    }
-
-    private void exibirDireito(BIntNo arv) {
+    public void exibirNoDir(BIntNo arv) {
         if (arv != null) {
-            exibirDireito(arv.dir);
-            System.out.println(arv.valor);
+            System.out.println("Direito: " + arv.valor);
+            exibirNoDir(arv.esq);
+            exibirNoDir(arv.dir);
         }
     }
-
-    public void exibirNoDir() {
-        exibirDireito(Raiz);
+    
+    public void exibirNo() {
+        exibirNoEsq(Raiz.esq);
+        exibirRaiz();
+        exibirNoDir(Raiz.dir);
     }
 
     public void exibirRaiz() {
@@ -49,60 +50,75 @@ public class ArvoreBinaria {
             System.out.println("Árvore vazia!");
         }
     }
+    
+    public void No(int item) {
+        BIntNo tempNo, pai, filho, temp;
 
-    private BIntNo remover(BIntNo arvore, int valor) {
-        if (arvore == null) {
-            return null; // Se a árvore estiver vazia ou o valor não estiver presente, retorna null
-        }
+        tempNo = Raiz;
+        pai = null;
+        filho = Raiz;
 
-        if (valor < arvore.valor) {
-            arvore.esq = remover(arvore.esq, valor);
-        } else if (valor > arvore.valor) {
-            arvore.dir = remover(arvore.dir, valor);
-        } else {
-            // Nó com apenas um filho ou sem filhos
-            if (arvore.esq == null) {
-                return arvore.dir;
-            } else if (arvore.dir == null) {
-                return arvore.esq;
+        while (tempNo != null && tempNo.valor != item) {
+            pai = tempNo;
+            if (item < tempNo.valor) {
+                tempNo = tempNo.esq;
+            } else {
+                tempNo = tempNo.dir;
             }
 
-            // Nó com dois filhos: encontrar o sucessor em ordem
-            arvore.valor = minValor(arvore.dir);
-
-            // Remover o sucessor em ordem
-            arvore.dir = remover(arvore.dir, arvore.valor);
+            if (tempNo == null) {
+                System.out.println("Item não localizado!");
+                return; // Se o item não foi encontrado, retorna sem fazer nada
+            }
         }
 
-        return arvore;
-    }
+        if (pai == null) {
+            if (tempNo.dir == null) {
+                Raiz = tempNo.esq;
+            } else if (tempNo.esq == null) {
+                Raiz = tempNo.dir;
+            } else {
+                for (temp = tempNo, filho = tempNo.esq; filho.dir != null; temp = filho, filho = filho.dir) {
+                    // Encontra o nó mais à direita na subárvore esquerda
+                }
+                if (filho != tempNo.esq) {
+                    temp.dir = filho.esq;
+                    filho.esq = tempNo.esq;
+                }
+                filho.dir = tempNo.dir;
+                Raiz = filho;
+            }
+        } else {
+            if (tempNo.dir == null) {
+                if (pai.esq == tempNo) {
+                    pai.esq = tempNo.esq;
+                } else {
+                    pai.dir = tempNo.esq;
+                }
+            } else if (tempNo.esq == null) {
+                if (pai.esq == tempNo) {
+                    pai.esq = tempNo.dir;
+                } else {
+                    pai.dir = tempNo.dir;
+                }
+            } else {
+                for (temp = tempNo, filho = tempNo.esq; filho.dir != null; temp = filho, filho = filho.dir) {
+                    // Encontra o nó mais à direita na subárvore esquerda
+                }
+                if (filho != tempNo.esq) {
+                    temp.dir = filho.esq;
+                    filho.esq = tempNo.esq;
+                }
+                filho.dir = tempNo.dir;
 
-    private int minValor(BIntNo node) {
-        int minValor = node.valor;
-        while (node.esq != null) {
-            minValor = node.esq.valor;
-            node = node.esq;
+                if (pai.esq == tempNo) {
+                    pai.esq = filho;
+                } else {
+                    pai.dir = filho;
+                }
+            }
         }
-        return minValor;
     }
 
-    public void removerNo(int valor) {
-        Raiz = remover(Raiz, valor);
-    }
-
-    public void exibirNo() {
-        exibirNoEsq();
-        exibirRaiz();
-        exibirNoDir();
-    }
-
-    private class BIntNo {
-        int valor;
-        BIntNo esq, dir;
-
-        public BIntNo(int item) {
-            valor = item;
-            esq = dir = null;
-        }
-    }
+    
 }
